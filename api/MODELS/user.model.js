@@ -24,4 +24,4 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema); //singular name user will be converted to plural users by mongoose if more than one user is there
 
-export default User; //we can now use User model anywhere in our project
+export default User; //we can now use User model anywhere in our project in 
