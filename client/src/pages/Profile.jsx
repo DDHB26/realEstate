@@ -69,7 +69,7 @@ export default function Profile() {
           className="bg-blue-500 text-white p-3 rounded-lg uppercase hover:opacity-85 disabled:opacity-70"
           disabled={loading}
         >
-          {loading ? 'Updating...' : 'Update'}
+          {loading ? 'Updating....' : 'Update'}
         </button>
       </form>
 
