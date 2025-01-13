@@ -13,6 +13,7 @@ export default function OAuth() {
           const auth= getAuth(app)  //getAuth is a function that takes the app created in firebase.js file as an argument to know which app to use for authentication
 
           const result= await signInWithPopup(auth,provider) 
+          console.log(result.user )
           const res = await fetch('/api/auth/google', { 
             method: 'POST',
             headers: {
