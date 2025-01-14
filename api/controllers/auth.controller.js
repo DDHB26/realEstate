@@ -36,7 +36,7 @@ export const google = async(req, res,next) => {
   console.log(req.body);
    try {
      const user = await User.findOne({ email: req.body.email });
-     console.log("pratham ");
+
      console.log(user);
        if(user){   //if user exist that is the sign in process
             const token = jwt.sign({ id : user._id }, process.env.JWT_SECRET); 

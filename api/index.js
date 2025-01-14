@@ -2,7 +2,8 @@
  import mongoose from 'mongoose';
  import dotenv from 'dotenv';
  import userRouter from './routes/user.route.js'; 
- import authRouter from './routes/auth.route.js'; 
+ import authRouter from './routes/auth.route.js';
+ import cookieParser from 'cookie-parser';
 
  dotenv.config({ path: './api/.env' }); //for not writing path: './api/.env' just relocate the environment varible to the root node ie the uppermost level where package.json is residing  //dotenv is used to hide the password and username of the database
  
@@ -14,6 +15,7 @@
     });
  const app = express(); //express js
  app.use(express.json()); //so that we can use json data in the server 
+  app.use(cookieParser());  //to use cookies in the server
  app.listen(3000,()=>{
     console.log('Server is running on port 3000!') //port number doesnt matter 4000 5000 bhi chalta  //bar bar node ap/index.js na karna pade changes dekhne kain  liye isiliye humne npm i nodemon install kiya aur package.json mai dev mai likhdiya aur wha render(deployment) kai liye start bhi likh diya
  }

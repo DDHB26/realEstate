@@ -16,7 +16,7 @@ export default function Profile() {
     // Validate file type
     const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     if (!validImageTypes.includes(file.type)) {
-      setSuccessMessage('Invalid file type. Please upload an image.');
+      setSuccessMessage('Invalid file type. All files Mat Select Karo Pyarelal .');f
       return;
     }
 
