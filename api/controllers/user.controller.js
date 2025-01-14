@@ -7,7 +7,7 @@ export const test = (req, res) => { //req is request from the browser and res is
     res.json({
         message: 'Test Successfull',
     });
-};
+}
 
 export const updateUser = async (req, res,next) => {
     if(req.user.id !== req.params.id) return next(errorHandler(403, 'First Sign-in Then Update Pyare-Lal')); //bhaisaab _id tha isiliye itni der se error hie aaye jara tha update karna mai it is only id 
