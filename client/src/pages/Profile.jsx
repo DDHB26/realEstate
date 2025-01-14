@@ -83,7 +83,7 @@ export default function Profile() {
       setSuccessMessage('Profile updated successfully!');
     } catch (error) {
       dispatch(updateUserFailure(error.message));
-      setSuccessMessage('Update failed. Please try again.');
+      setSuccessMessage('Update failed.');
     } finally {
       setLoading(false);
     }
