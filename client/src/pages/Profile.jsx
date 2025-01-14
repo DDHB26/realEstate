@@ -1,27 +1,32 @@
 import React, { useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateAvatar } from '../redux/user/userSlice';
+import { updateAvatar, updateUserStart, updateUserFailure, updateUserSuccess } from '../redux/user/userSlice';
 
 export default function Profile() {
   const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState(''); // For success or error messages
+  const [successMessage, setSuccessMessage] = useState('');
   const dispatch = useDispatch();
   const fileRef = useRef(null);
   const { currentUser } = useSelector((state) => state.user);
+  const [formData, setFormData] = useState({
+    username: currentUser.username || '',
+    email: currentUser.email || '',
+    password: '',
+    avatar: currentUser.avatar || '',
+  });
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Validate file type
     const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     if (!validImageTypes.includes(file.type)) {
-      setSuccessMessage('Invalid file type. All files Mat Select Karo Pyarelal .');f
+      setSuccessMessage('Invalid file type. Please select a valid image.');
       return;
     }
 
     setLoading(true);
-    setSuccessMessage(''); // Clear existing messages
+    setSuccessMessage('');
 
     const data = new FormData();
     data.append('file', file);
@@ -35,11 +40,50 @@ export default function Profile() {
       });
 
       const uploadedImage = await res.json();
-      dispatch(updateAvatar(uploadedImage.url)); // Update avatar in Redux store
+
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        avatar: uploadedImage.url,
+      }));
+
+      dispatch(updateAvatar(uploadedImage.url));
       setSuccessMessage('Image uploaded successfully!');
     } catch (error) {
-      console.error('Image upload failed', error);
       setSuccessMessage('Image upload failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setSuccessMessage('');
+    try {
+      dispatch(updateUserStart());
+      const res = await fetch(`/api/user/update/${currentUser._id}`, {  // the _id here is the _id used in mongoose database
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        dispatch(updateUserFailure(data));
+        setSuccessMessage('Update failed. Please try again.');
+        return;
+      }
+
+      dispatch(updateUserSuccess(data));
+      setSuccessMessage('Profile updated successfully!');
+    } catch (error) {
+      dispatch(updateUserFailure(error.message));
+      setSuccessMessage('Update failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -48,28 +92,68 @@ export default function Profile() {
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
-      <form className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {/* Avatar */}
+        <div className="self-center relative">
+          <input
+            type="file"
+            ref={fileRef}
+            hidden
+            accept="image/*"
+            onChange={handleFileUpload}
+          />
+          <div
+            className="w-24 h-24 rounded-full bg-gradient-to-r from-gray-300 to-gray-400 p-1 flex items-center justify-center relative"
+            onClick={() => fileRef.current.click()}
+          >
+            <img
+              src={formData.avatar || '/default-avatar.png'}
+              alt="profile"
+              className="w-full h-full rounded-full object-cover"
+            />
+            <button
+              type="button"
+              className="absolute bottom-[-10px] right-[-10px] bg-blue-500 text-white text-xs px-3 py-1 rounded-full shadow-md hover:bg-blue-600"
+              onClick={() => fileRef.current.click()}
+            >
+              Edit
+            </button>
+          </div>
+        </div>
+
+        {/* Input Fields */}
         <input
-          type="file"
-          ref={fileRef}
-          hidden
-          accept="image/*"
-          onChange={handleFileUpload}
+          type="text"
+          placeholder="Username"
+          className="border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          id="username"
+          value={formData.username}
+          onChange={handleChange}
         />
-        <img
-          onClick={() => fileRef.current.click()}
-          src={currentUser?.avatar || '/default-avatar.png'}
-          alt="profile"
-          className="w-24 h-24 rounded-full object-cover self-center cursor-pointer mt-2"
+        <input
+          type="email"
+          placeholder="Email"
+          className="border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          id="email"
+          value={formData.email}
+          onChange={handleChange}
         />
-        <input type="text" placeholder="username" className="border p-3 rounded-lg" />
-        <input type="text" placeholder="email" className="border p-3 rounded-lg" />
-        <input type="text" placeholder="password" className="border p-3 rounded-lg" />
+        <input
+          type="password"
+          placeholder="Password"
+          className="border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          id="password"
+          value={formData.password}
+          onChange={handleChange}
+        />
+
+        {/* Update Profile Button */}
         <button
-          className="bg-blue-500 text-white p-3 rounded-lg uppercase hover:opacity-85 disabled:opacity-70"
+          type="submit"
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 shadow-md"
           disabled={loading}
         >
-          {loading ? 'Updating....' : 'Update'}
+          {loading ? 'Updating...' : 'Update Profile'}
         </button>
       </form>
 
@@ -111,6 +195,11 @@ export default function Profile() {
     </div>
   );
 }
+
+
+
+
+
 
 
 
