@@ -3,6 +3,7 @@
  import dotenv from 'dotenv';
  import userRouter from './routes/user.route.js'; 
  import authRouter from './routes/auth.route.js';
+ import listingRouter from './routes/listing.route.js';
  import cookieParser from 'cookie-parser';
 
  dotenv.config({ path: './api/.env' }); //for not writing path: './api/.env' just relocate the environment varible to the root node ie the uppermost level where package.json is residing  //dotenv is used to hide the password and username of the database
@@ -23,6 +24,7 @@
 
 app.use("/api/user",userRouter);  //userRouter is the router we created in user.route.js file 
 app.use("/api/auth",authRouter);  //authRouter is the router we created in auth.route.js file
+app.use("/api/listing",listingRouter);  //listingRouter is the router we created in listing.route.js file
 
 app.use((error,req,res,next)=>{  //error handling middleware)
   const statusCode = error.statusCode || 500; //if the status code is not there then it will be 500
