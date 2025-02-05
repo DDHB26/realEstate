@@ -1,19 +1,21 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit'
-import userReducer from './user/userSlice'
-import { persistReducer, persistStore } from 'redux-persist'
-import storage from 'redux-persist/lib/storage'
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import userReducer from './user/userSlice';
+import imageReducer from './imageSlice'; //  Import imageSlice
+import { persistReducer, persistStore } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 
- 
+const rootReducer = combineReducers({
+  user: userReducer,
+  image: imageReducer, 
+});
 
-const rootReducer = combineReducers({user : userReducer})
-
-const persistConfig={
+const persistConfig = {
   key: 'root',
   storage,
   version: 1,
-}
+};
 
-const persistedReducer = persistReducer(persistConfig, rootReducer) //we created persistedReducer to store the data in the local storage so that the data is not lost when we refresh the page and user does not have to SignIn again and again
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,
@@ -21,7 +23,6 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: false,
     }),
-})
+});
 
-
-export const persistor = persistStore(store) //persistor is used to store the data in the local storage so that the data is not lost when we refresh the page and user does not have to SignIn again and again
+export const persistor = persistStore(store);
